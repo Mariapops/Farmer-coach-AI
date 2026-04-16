@@ -1,2 +1,2 @@
 # Farmer-coach-ai
-An hackathon project
+Hackathon project
