@@ -1,0 +1,134 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "3a1091bb-2eea-4d54-8c19-fef94eec7c9c",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "bea15b91-ec74-4f06-8047-e18b7371087f",
+      "name": "Webhook",
+      "webhookId": "3a1091bb-2eea-4d54-8c19-fef94eec7c9c"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{$json.body.Body}}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are FarmerCoach, an AI assistant that helps farmers in Nigeria. You help with: - Weather information and how it affects crops - Crop disease identification and treatment - Best farming practices - Planting and harvesting advice  Always give short, simple, and practical answers that farmers can easily understand. When asked about weather, ask for their location first if they haven't provided it. Reply in the same language the farmer uses."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        416,
+        0
+      ],
+      "id": "3798c2b4-1216-4f2d-8a6c-75e12181a91c",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "d97159d0-cc38-49ee-81b0-94873c80ebca",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "tAgOws0Iro3buzqn",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "from": "+14155238886",
+        "to": "={{$('Webhook').item.json.body.From.split(':')[1]}}",
+        "toWhatsapp": true,
+        "message": "={{$json.text}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        736,
+        80
+      ],
+      "id": "85524719-3836-4de6-a839-a16f01e25414",
+      "name": "Send an SMS/MMS/WhatsApp message",
+      "credentials": {
+        "twilioApi": {
+          "id": "7MZlxuqiVZumOmdm",
+          "name": "Twilio account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f1bb6426-4eb7-414b-b3b1-09d66f274f8d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3d618aa3dc48ba7b16ddca9b58fa6703c89872cd4cbb6a422804beff4a250d3f"
+  },
+  "id": "qLZJRxdJBXckc7HR",
+  "tags": []
+}
